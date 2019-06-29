@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
   unsigned INT it,maxInt;
   DOUBLE y[3], param[5], x1, x2, h, tol;
 
-  param[0] = 1.e-06;
+  param[0] = 1.e-07;
   y[0]     =   2.0;
   y[1]     =   0.0;
 //y[2] = 0.0;
@@ -114,7 +114,8 @@ int main(int argc, char *argv[])
              , tol      , nEdo
              , maxInt   , true   
              , FILE_OUT , "steppersie.out"
-             , &rhs     , &jacY);  
+//           , &rhs     , &jacY); 
+             , &rhs     , NULL);  
   printf("%d\n",it); 
 
 

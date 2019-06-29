@@ -219,7 +219,7 @@ int StepperSie(DOUBLE *y                  , DOUBLE *param
   DOUBLE logFact,ratio,coeff[KMAXX + 1][KMAXX + 1];
   DOUBLE theta,jacRedo,hNext,hNew,hDid,h,x,xOld,err,errOld,eps;
   DOUBLE cost[KMAXX+1],work[KMAXX+1],hOpt[KMAXX+1],expo;
-  DOUBLE facMin,fa;  
+  DOUBLE facMin,fa,ySafe,delt,uround;  
   unsigned INT it,IntegralStepMax;
   INT *p;
   DOUBLE *scale,*dfdy,*ySeq,*table,*ySav
@@ -230,6 +230,7 @@ int StepperSie(DOUBLE *y                  , DOUBLE *param
   hNext   = hInit;
   x       = x1;
   eps     = 1.e-15;
+  uround  = 1.e-06;  
 /*...................................................................*/
 
 /*...*/  
@@ -331,8 +332,8 @@ int StepperSie(DOUBLE *y                  , DOUBLE *param
     hOpt[0] = 0.1e0*fabs(h);
     forward = h > 0 ? true : false;
 /*... Guardando os valores inicias*/
-      for (i=0;i<nEdo;i++) 
-        ySav[i] = y[i]; 
+    for (i=0;i<nEdo;i++) 
+      ySav[i] = y[i]; 
 
     if(h!=hNext && !firstStep)
       lastStep = true;
@@ -359,8 +360,27 @@ int StepperSie(DOUBLE *y                  , DOUBLE *param
     compute_jac:
     if (theta > jacRedo && !calcJac)
     { 
+/*... diferenca finita*/
+      if (jacY == NULL)
+      {
+        rhs(x, y,dyt,param);
+        for(i=0;i<nEdo;i++)
+        {
+          ySafe = y[i];
+          delt  = sqrt(uround*max(1.e-5,fabs(ySafe)));
+          y[i]  = ySafe + delt;
+          rhs(x, y,yt,param);
+          for(j=0;j<nEdo;j++)
+            MAT2D(j,i,dfdy,nEdo) = (yt[j] - dyt[j])/delt;
+          y[i]   = ySafe;
+        }
+      }
+
+/*... analitico*/
+      else
+        jacY(x, y, dfdy ,param);    
 /*... derivada df/dy*/
-      jacY(x, y, dfdy ,param);
+
       calcJac=true;
     }
 /*...................................................................*/
