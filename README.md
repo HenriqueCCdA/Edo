@@ -3,14 +3,14 @@
 Fonte: Solver Ordinary Differential Equations II 
        Numerical Recipes in C++
 
-Solvers
+## Solvers
 
-no stiff
-rtk4
-stepperDopr5
-stepperDopr853
+### Non-stiff solver
+* rtk4
+* stepperDopr5
+* stepperDopr853
 
-stiff
+### Stiff solver
 
-stepperRoss
-stepperSie
+* stepperRoss
+* stepperSie
